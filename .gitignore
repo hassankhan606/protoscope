@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.Python
+venv/
+env/
+.env
+.venv/
+ENV/
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Data & Cache
+data/cache/
+*.json.cache
+*.pkl
+*.h5
+
+# Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Logs
+logs/
+*.log
+loguru_*.log
+
+# API keys / secrets
+.env
+secrets.py
+config_local.py
+
+# OS
+.DS_Store
+*.tmp
+*.bak
+
+# Distribution
+*.tar.gz
+*.zip
