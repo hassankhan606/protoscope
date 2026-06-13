@@ -1,48 +1,47 @@
 """
-BioDiscover Color Theme
-Dark biotech-inspired palette with phosphorescent green accents.
+BioDiscover Color Theme - Bright Modern Biotech
+Light-first palette with teal/blue accents and dark navy navbar.
 """
 
 
 class BioTheme:
-    # Backgrounds (darkest → lightest)
-    BG_DARK   = "#0d1117"   # Page background
-    BG_PANEL  = "#161b22"   # Sidebar / header
-    BG_MID    = "#1c2330"   # Cards, active nav
-    BG_CARD   = "#21293a"   # Data cards
+    # Navbar (always dark)
+    NAV_BG        = "#0a1628"
+    NAV_ACCENT    = "#00d4aa"
+    NAV_TEXT      = "#8ca0b8"
+    NAV_ACTIVE_BG = "#0d2b24"   # dark teal tint (no alpha needed)
+
+    # App backgrounds (bright)
+    BG_MAIN   = "#f8f9fc"   # Page background
+    BG_PANEL  = "#ffffff"   # Cards, panels
+    BG_CARD   = "#f1f4f9"   # Secondary cards
+    BG_DARK   = "#0a1628"   # Molecule viewer bg
 
     # Accents
-    ACCENT_GREEN  = "#39d353"   # Primary — DNA-sequencer green
-    ACCENT_BLUE   = "#58a6ff"   # Secondary — electron-blue
-    ACCENT_PURPLE = "#bc8cff"   # Tertiary — molecular purple
-    ACCENT_ORANGE = "#f0883e"   # Warning / enzymes
-    ACCENT_RED    = "#ff7b72"   # Error / stop codon
+    ACCENT_TEAL   = "#00d4aa"
+    ACCENT_BLUE   = "#2563eb"
+    ACCENT_PURPLE = "#7c3aed"
+    ACCENT_AMBER  = "#d97706"
+    ACCENT_RED    = "#dc2626"
 
     # Text
-    TEXT_MAIN = "#e6edf3"   # Primary text
-    TEXT_DIM  = "#8b949e"   # Labels, subtitles
-    TEXT_FAINT= "#484f58"   # Placeholder
+    TEXT_MAIN    = "#0f172a"
+    TEXT_SUB     = "#475569"
+    TEXT_DIM     = "#94a3b8"
+    TEXT_FAINT   = "#cbd5e1"
 
     # Borders
-    BORDER    = "#30363d"
+    BORDER       = "#e2e8f0"
+    BORDER_MED   = "#cbd5e1"
 
-    # Tag colours for functional annotations
-    TAG_COLORS = {
-        "enzyme":     ("#f0883e", "#0d1117"),
-        "receptor":   ("#58a6ff", "#0d1117"),
-        "kinase":     ("#bc8cff", "#0d1117"),
-        "transporter":("#39d353", "#0d1117"),
-        "channel":    ("#ff7b72", "#0d1117"),
-        "default":    ("#8b949e", "#0d1117"),
-    }
+    # Section label color
+    SECTION_LABEL = "#00d4aa"
 
-    # Font families (fall-back chain)
-    FONT_MONO   = ("Consolas", "Courier New", "monospace")
-    FONT_UI     = ("Segoe UI", "Helvetica Neue", "sans-serif")
+    # Tag presets
+    TAG_TEAL   = ("#e1f5ee", "#0f6e56", "#9fe1cb")   # bg, fg, border
+    TAG_BLUE   = ("#e6f1fb", "#185fa5", "#b5d4f4")
+    TAG_AMBER  = ("#faeeda", "#854f0b", "#fac775")
+    TAG_GRAY   = ("#f1f4f9", "#475569", "#e2e8f0")
 
-    def tag_color(self, keyword: str):
-        kw = keyword.lower()
-        for key in self.TAG_COLORS:
-            if key in kw:
-                return self.TAG_COLORS[key]
-        return self.TAG_COLORS["default"]
+    FONT_MONO = ("Consolas", "Courier New", "monospace")
+    FONT_UI   = ("Segoe UI", "Helvetica Neue", "Arial", "sans-serif")

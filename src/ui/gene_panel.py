@@ -23,28 +23,28 @@ class GenePanel:
         header.pack(fill="x")
         tk.Label(header,
                  text="🔬  Gene Explorer",
-                 font=("Consolas", 18, "bold"),
-                 fg=self.t.ACCENT_GREEN,
+                 font=("Segoe UI", 18, "bold"),
+                 fg=self.t.ACCENT_TEAL,
                  bg=self.t.BG_PANEL).pack(side="left", padx=24)
         tk.Label(header,
                  text="Powered by NCBI Entrez",
-                 font=("Consolas", 10),
+                 font=("Segoe UI", 10),
                  fg=self.t.TEXT_DIM,
                  bg=self.t.BG_PANEL).pack(side="left")
 
         # Search
-        sf = tk.Frame(self.parent, bg=self.t.BG_DARK, pady=12)
+        sf = tk.Frame(self.parent, bg=self.t.BG_MAIN, pady=12)
         sf.pack(fill="x", padx=20)
 
-        row = tk.Frame(sf, bg=self.t.BG_DARK)
+        row = tk.Frame(sf, bg=self.t.BG_MAIN)
         row.pack(fill="x")
 
         self.q = tk.StringVar()
         e = tk.Entry(row, textvariable=self.q,
-                     font=("Consolas", 13),
+                     font=("Segoe UI", 13),
                      bg=self.t.BG_PANEL,
                      fg=self.t.TEXT_MAIN,
-                     insertbackground=self.t.ACCENT_GREEN,
+                     insertbackground=self.t.ACCENT_TEAL,
                      relief="flat", width=40)
         e.pack(side="left", ipady=8, ipadx=8)
         e.bind("<Return>", self._search)
@@ -56,51 +56,51 @@ class GenePanel:
                                        "10116 (Rat)", "4932 (Yeast)",
                                        "511145 (E. coli K-12)", "7227 (Drosophila)"],
                                width=20, state="readonly",
-                               font=("Consolas", 10))
+                               font=("Segoe UI", 10))
         sp_menu.pack(side="left", padx=8, ipady=6)
 
         tk.Button(row, text=" 🔍 Search ",
-                  font=("Consolas", 12, "bold"),
-                  bg=self.t.ACCENT_GREEN,
-                  fg=self.t.BG_DARK,
+                  font=("Segoe UI", 12, "bold"),
+                  bg=self.t.ACCENT_TEAL,
+                  fg=self.t.BG_MAIN,
                   relief="flat",
                   cursor="hand2",
                   command=self._search).pack(side="left", ipady=6)
 
         # Results area
         paned = tk.PanedWindow(self.parent, orient="horizontal",
-                               bg=self.t.BG_DARK, sashwidth=4)
+                               bg=self.t.BG_MAIN, sashwidth=4)
         paned.pack(fill="both", expand=True, padx=10, pady=8)
 
         # List
-        left = tk.Frame(paned, bg=self.t.BG_DARK)
+        left = tk.Frame(paned, bg=self.t.BG_MAIN)
         paned.add(left, width=360)
         tk.Label(left, text="RESULTS",
-                 font=("Consolas", 9, "bold"),
+                 font=("Segoe UI", 9, "bold"),
                  fg=self.t.TEXT_DIM,
-                 bg=self.t.BG_DARK).pack(anchor="w", padx=6, pady=(4, 2))
+                 bg=self.t.BG_MAIN).pack(anchor="w", padx=6, pady=(4, 2))
 
-        list_wrap = tk.Frame(left, bg=self.t.BG_DARK)
+        list_wrap = tk.Frame(left, bg=self.t.BG_MAIN)
         list_wrap.pack(fill="both", expand=True)
-        self.canvas = tk.Canvas(list_wrap, bg=self.t.BG_DARK, highlightthickness=0)
+        self.canvas = tk.Canvas(list_wrap, bg=self.t.BG_MAIN, highlightthickness=0)
         sb = ttk.Scrollbar(list_wrap, orient="vertical", command=self.canvas.yview)
         self.canvas.configure(yscrollcommand=sb.set)
         sb.pack(side="right", fill="y")
         self.canvas.pack(side="left", fill="both", expand=True)
-        self.inner = tk.Frame(self.canvas, bg=self.t.BG_DARK)
+        self.inner = tk.Frame(self.canvas, bg=self.t.BG_MAIN)
         self.canvas.create_window((0, 0), window=self.inner, anchor="nw")
         self.inner.bind("<Configure>",
                         lambda e: self.canvas.configure(
                             scrollregion=self.canvas.bbox("all")))
 
         # Detail
-        self.detail = tk.Frame(paned, bg=self.t.BG_DARK)
+        self.detail = tk.Frame(paned, bg=self.t.BG_MAIN)
         paned.add(self.detail)
         tk.Label(self.detail,
                  text="Select a gene to see details.",
-                 font=("Consolas", 12),
+                 font=("Segoe UI", 12),
                  fg=self.t.TEXT_DIM,
-                 bg=self.t.BG_DARK).pack(expand=True)
+                 bg=self.t.BG_MAIN).pack(expand=True)
 
     def _search(self, event=None):
         q = self.q.get().strip()
@@ -128,32 +128,32 @@ class GenePanel:
             w.destroy()
         if not results:
             tk.Label(self.inner, text="No genes found.",
-                     font=("Consolas", 10),
+                     font=("Segoe UI", 10),
                      fg=self.t.TEXT_DIM,
-                     bg=self.t.BG_DARK).pack(pady=20)
+                     bg=self.t.BG_MAIN).pack(pady=20)
             return
         for gene in results:
             self._gene_card(gene)
 
     def _gene_card(self, gene):
-        card = tk.Frame(self.inner, bg=self.t.BG_CARD, padx=10, pady=8, cursor="hand2")
+        card = tk.Frame(self.inner, bg=self.t.BG_PANEL, padx=10, pady=8, cursor="hand2")
         card.pack(fill="x", pady=3, padx=4)
 
-        hr = tk.Frame(card, bg=self.t.BG_CARD)
+        hr = tk.Frame(card, bg=self.t.BG_PANEL)
         hr.pack(fill="x")
         tk.Label(hr, text=gene.get("name", "?"),
-                 font=("Consolas", 12, "bold"),
+                 font=("Segoe UI", 12, "bold"),
                  fg=self.t.ACCENT_BLUE,
-                 bg=self.t.BG_CARD).pack(side="left")
+                 bg=self.t.BG_PANEL).pack(side="left")
         tk.Label(hr, text=f"  ID: {gene.get('uid','')}",
-                 font=("Consolas", 9),
+                 font=("Segoe UI", 9),
                  fg=self.t.TEXT_DIM,
-                 bg=self.t.BG_CARD).pack(side="right")
+                 bg=self.t.BG_PANEL).pack(side="right")
 
         tk.Label(card, text=gene.get("description", "")[:70],
-                 font=("Consolas", 9),
+                 font=("Segoe UI", 9),
                  fg=self.t.TEXT_MAIN,
-                 bg=self.t.BG_CARD,
+                 bg=self.t.BG_PANEL,
                  anchor="w").pack(fill="x")
 
         card.bind("<Button-1>", lambda e, g=gene: self._show_detail(g))
@@ -167,24 +167,24 @@ class GenePanel:
         uid = gene.get("uid", "")
         name = gene.get("name", "")
 
-        canvas = tk.Canvas(self.detail, bg=self.t.BG_DARK, highlightthickness=0)
+        canvas = tk.Canvas(self.detail, bg=self.t.BG_MAIN, highlightthickness=0)
         sb = ttk.Scrollbar(self.detail, orient="vertical", command=canvas.yview)
         canvas.configure(yscrollcommand=sb.set)
         sb.pack(side="right", fill="y")
         canvas.pack(side="left", fill="both", expand=True)
-        inner = tk.Frame(canvas, bg=self.t.BG_DARK, padx=16, pady=12)
+        inner = tk.Frame(canvas, bg=self.t.BG_MAIN, padx=16, pady=12)
         canvas.create_window((0, 0), window=inner, anchor="nw")
         inner.bind("<Configure>",
                    lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
         tk.Label(inner, text=f"🔬 {name}",
-                 font=("Consolas", 20, "bold"),
+                 font=("Segoe UI", 20, "bold"),
                  fg=self.t.ACCENT_BLUE,
-                 bg=self.t.BG_DARK).pack(anchor="w")
+                 bg=self.t.BG_MAIN).pack(anchor="w")
         tk.Label(inner, text=gene.get("description", ""),
-                 font=("Consolas", 12),
+                 font=("Segoe UI", 12),
                  fg=self.t.TEXT_MAIN,
-                 bg=self.t.BG_DARK,
+                 bg=self.t.BG_MAIN,
                  wraplength=500, justify="left").pack(anchor="w", pady=(0, 10))
 
         for label, val in [
@@ -196,27 +196,27 @@ class GenePanel:
             row = tk.Frame(inner, bg=self.t.BG_PANEL, pady=6, padx=10)
             row.pack(fill="x", pady=2)
             tk.Label(row, text=f"{label}:",
-                     font=("Consolas", 9, "bold"),
+                     font=("Segoe UI", 9, "bold"),
                      fg=self.t.TEXT_DIM,
                      bg=self.t.BG_PANEL,
                      width=14, anchor="w").pack(side="left")
             tk.Label(row, text=str(val),
-                     font=("Consolas", 10),
+                     font=("Segoe UI", 10),
                      fg=self.t.TEXT_MAIN,
                      bg=self.t.BG_PANEL,
                      anchor="w").pack(side="left")
 
         # Links
-        bf = tk.Frame(inner, bg=self.t.BG_DARK, pady=10)
+        bf = tk.Frame(inner, bg=self.t.BG_MAIN, pady=10)
         bf.pack(fill="x")
         for label, url, color in [
             ("🌐 NCBI Gene", f"https://www.ncbi.nlm.nih.gov/gene/{uid}", self.t.ACCENT_BLUE),
-            ("🧬 UniProt",  f"https://www.uniprot.org/uniprot/?query=gene:{name}", self.t.ACCENT_GREEN),
+            ("🧬 UniProt",  f"https://www.uniprot.org/uniprot/?query=gene:{name}", self.t.ACCENT_TEAL),
             ("🗺️ KEGG",     f"https://www.genome.jp/dbget-bin/www_bget?hsa:{name}", self.t.ACCENT_ORANGE),
         ]:
             tk.Button(bf, text=label,
-                      font=("Consolas", 10),
-                      bg=color, fg=self.t.BG_DARK,
+                      font=("Segoe UI", 10),
+                      bg=color, fg=self.t.BG_MAIN,
                       relief="flat", cursor="hand2",
                       command=lambda u=url: webbrowser.open(u)).pack(
                           side="left", padx=4, ipady=4, ipadx=6)

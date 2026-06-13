@@ -1,19 +1,13 @@
 """
 Main Window - BioDiscover UI
-Beautiful dark biotech-themed interface using CustomTkinter
+Bright modern biotech interface with dark navy navbar.
 """
 
 import tkinter as tk
-from tkinter import ttk, font
+from tkinter import ttk
 import threading
 import webbrowser
 from datetime import datetime
-
-try:
-    import customtkinter as ctk
-    CTK_AVAILABLE = True
-except ImportError:
-    CTK_AVAILABLE = False
 
 from src.ui.theme import BioTheme
 from src.ui.protein_panel import ProteinPanel
@@ -26,205 +20,151 @@ from src.ui.dashboard_panel import DashboardPanel
 class BioDiscoverApp:
     def __init__(self, root):
         self.root = root
-        self.theme = BioTheme()
-        self._setup_root()
-        self._build_layout()
+        self.t = BioTheme()
+        self._setup_styles()
+        self._build()
         self._show_dashboard()
 
-    def _setup_root(self):
-        self.root.configure(bg=self.theme.BG_DARK)
-        self.root.protocol("WM_DELETE_WINDOW", self._on_close)
-
-        # Custom styles for ttk
+    def _setup_styles(self):
+        self.root.configure(bg=self.t.BG_MAIN)
         style = ttk.Style()
         style.theme_use("clam")
-        style.configure("TNotebook", background=self.theme.BG_DARK, borderwidth=0)
-        style.configure("TNotebook.Tab",
-                        background=self.theme.BG_MID,
-                        foreground=self.theme.TEXT_DIM,
-                        padding=[16, 8],
-                        font=("Consolas", 10))
-        style.map("TNotebook.Tab",
-                  background=[("selected", self.theme.BG_PANEL)],
-                  foreground=[("selected", self.theme.ACCENT_GREEN)])
         style.configure("Vertical.TScrollbar",
-                        background=self.theme.BG_MID,
-                        troughcolor=self.theme.BG_DARK,
-                        arrowcolor=self.theme.ACCENT_GREEN)
+                        background=self.t.BG_CARD,
+                        troughcolor=self.t.BG_MAIN,
+                        arrowcolor=self.t.TEXT_DIM,
+                        relief="flat", borderwidth=0)
+        style.configure("TCombobox",
+                        fieldbackground=self.t.BG_PANEL,
+                        background=self.t.BG_PANEL,
+                        foreground=self.t.TEXT_MAIN,
+                        selectbackground=self.t.ACCENT_TEAL)
 
-    def _build_layout(self):
-        # ── Top Header ──────────────────────────────────────────────
-        self.header = tk.Frame(self.root, bg=self.theme.BG_PANEL,
-                               height=64, pady=0)
-        self.header.pack(fill="x", side="top")
-        self.header.pack_propagate(False)
+    def _build(self):
+        # ── Navbar ─────────────────────────────────────────────────
+        nav = tk.Frame(self.root, bg=self.t.NAV_BG, height=56)
+        nav.pack(fill="x", side="top")
+        nav.pack_propagate(False)
 
-        # Logo + title
-        logo_frame = tk.Frame(self.header, bg=self.theme.BG_PANEL)
-        logo_frame.pack(side="left", padx=20, pady=10)
+        # Logo
+        logo_f = tk.Frame(nav, bg=self.t.NAV_BG)
+        logo_f.pack(side="left", padx=20, pady=10)
 
-        tk.Label(logo_frame,
-                 text="⬡ BioDiscover",
-                 font=("Consolas", 22, "bold"),
-                 fg=self.theme.ACCENT_GREEN,
-                 bg=self.theme.BG_PANEL).pack(side="left")
+        hex_canvas = tk.Canvas(logo_f, width=26, height=26,
+                               bg=self.t.NAV_BG, highlightthickness=0)
+        hex_canvas.pack(side="left")
+        # Draw hexagon
+        pts = []
+        import math
+        cx, cy, r = 13, 13, 11
+        for i in range(6):
+            angle = math.radians(60*i - 30)
+            pts += [cx + r*math.cos(angle), cy + r*math.sin(angle)]
+        hex_canvas.create_polygon(pts, fill=self.t.ACCENT_TEAL, outline="")
 
-        tk.Label(logo_frame,
-                 text="  Biotech Discovery Platform",
-                 font=("Consolas", 11),
-                 fg=self.theme.TEXT_DIM,
-                 bg=self.theme.BG_PANEL).pack(side="left", pady=6)
+        tk.Label(logo_f, text="  BioDiscover",
+                 font=("Segoe UI", 15, "bold"),
+                 fg="#ffffff", bg=self.t.NAV_BG).pack(side="left")
 
-        # Clock / version
-        self.clock_label = tk.Label(self.header,
-                                    text="",
-                                    font=("Consolas", 10),
-                                    fg=self.theme.TEXT_DIM,
-                                    bg=self.theme.BG_PANEL)
-        self.clock_label.pack(side="right", padx=20)
-        self._update_clock()
+        # Accent line under logo
+        tk.Frame(nav, bg=self.t.ACCENT_TEAL,
+                 width=2, height=32).pack(side="left", padx=16, pady=12)
 
-        tk.Label(self.header,
-                 text="v1.0 | PhD Edition",
-                 font=("Consolas", 9),
-                 fg=self.theme.ACCENT_BLUE,
-                 bg=self.theme.BG_PANEL).pack(side="right", padx=4)
-
-        # Separator line
-        sep = tk.Frame(self.root, bg=self.theme.ACCENT_GREEN, height=2)
-        sep.pack(fill="x")
-
-        # ── Body ────────────────────────────────────────────────────
-        body = tk.Frame(self.root, bg=self.theme.BG_DARK)
-        body.pack(fill="both", expand=True)
-
-        # Left sidebar
-        self.sidebar = tk.Frame(body, bg=self.theme.BG_PANEL,
-                                width=200, pady=10)
-        self.sidebar.pack(fill="y", side="left")
-        self.sidebar.pack_propagate(False)
-        self._build_sidebar()
-
-        # Main content area
-        self.content = tk.Frame(body, bg=self.theme.BG_DARK)
-        self.content.pack(fill="both", expand=True, side="left")
-
-        # Status bar
-        self.status_bar = tk.Frame(self.root, bg=self.theme.BG_PANEL, height=28)
-        self.status_bar.pack(fill="x", side="bottom")
-        self.status_bar.pack_propagate(False)
-        self.status_label = tk.Label(self.status_bar,
-                                     text="● Ready  |  APIs: UniProt · NCBI · PDB · KEGG · Open Food Facts",
-                                     font=("Consolas", 9),
-                                     fg=self.theme.ACCENT_GREEN,
-                                     bg=self.theme.BG_PANEL,
-                                     anchor="w")
-        self.status_label.pack(side="left", padx=12, pady=4)
-
-    def _build_sidebar(self):
-        tk.Label(self.sidebar,
-                 text="MODULES",
-                 font=("Consolas", 9, "bold"),
-                 fg=self.theme.TEXT_DIM,
-                 bg=self.theme.BG_PANEL).pack(pady=(16, 4), padx=12, anchor="w")
-
-        modules = [
-            ("🏠  Dashboard",    self._show_dashboard),
-            ("🧬  Protein Search", self._show_proteins),
-            ("🔬  Gene Explorer", self._show_genes),
-            ("🗺️  Pathways",     self._show_pathways),
-            ("🔷  3D Structures", self._show_structures),
-        ]
-
+        # Nav links
         self.nav_buttons = []
-        for label, command in modules:
-            btn = tk.Button(self.sidebar,
-                            text=label,
-                            font=("Consolas", 10),
-                            fg=self.theme.TEXT_MAIN,
-                            bg=self.theme.BG_PANEL,
-                            activeforeground=self.theme.ACCENT_GREEN,
-                            activebackground=self.theme.BG_MID,
+        nav_items = [
+            ("Dashboard",   self._show_dashboard),
+            ("Proteins",    self._show_proteins),
+            ("Genes",       self._show_genes),
+            ("Pathways",    self._show_pathways),
+            ("Structures",  self._show_structures),
+        ]
+        for label, cmd in nav_items:
+            btn = tk.Button(nav, text=label,
+                            font=("Segoe UI", 10),
+                            fg=self.t.NAV_TEXT,
+                            bg=self.t.NAV_BG,
+                            activeforeground=self.t.ACCENT_TEAL,
+                            activebackground=self.t.NAV_BG,
                             relief="flat",
-                            anchor="w",
-                            padx=16,
+                            padx=14, pady=0,
                             cursor="hand2",
-                            command=command)
-            btn.pack(fill="x", pady=2)
+                            command=cmd)
+            btn.pack(side="left", fill="y")
             self.nav_buttons.append(btn)
 
-        # Separator
-        tk.Frame(self.sidebar, bg=self.theme.BG_MID, height=1).pack(
-            fill="x", padx=12, pady=16)
+        # Clock on right
+        self.clock = tk.Label(nav, text="",
+                              font=("Segoe UI", 9),
+                              fg=self.t.NAV_TEXT, bg=self.t.NAV_BG)
+        self.clock.pack(side="right", padx=20)
+        self._tick()
 
-        tk.Label(self.sidebar,
-                 text="QUICK LINKS",
-                 font=("Consolas", 9, "bold"),
-                 fg=self.theme.TEXT_DIM,
-                 bg=self.theme.BG_PANEL).pack(pady=(0, 4), padx=12, anchor="w")
+        # PhD badge
+        badge = tk.Label(nav, text=" PhD Edition ",
+                         font=("Segoe UI", 9, "bold"),
+                         fg=self.t.NAV_BG,
+                         bg=self.t.ACCENT_TEAL,
+                         padx=4, pady=2)
+        badge.pack(side="right", padx=8, pady=14)
 
-        links = [
-            ("UniProt DB", "https://www.uniprot.org"),
-            ("NCBI Gene DB", "https://www.ncbi.nlm.nih.gov/gene"),
-            ("RCSB PDB", "https://www.rcsb.org"),
-            ("KEGG Pathways", "https://www.kegg.jp"),
-            ("AlphaFold DB", "https://alphafold.ebi.ac.uk"),
-        ]
-        for txt, url in links:
-            lbl = tk.Label(self.sidebar,
-                           text=f"  ↗ {txt}",
-                           font=("Consolas", 9),
-                           fg=self.theme.ACCENT_BLUE,
-                           bg=self.theme.BG_PANEL,
-                           cursor="hand2",
-                           anchor="w")
-            lbl.pack(fill="x", padx=8, pady=1)
-            lbl.bind("<Button-1>", lambda e, u=url: webbrowser.open(u))
+        # ── Teal accent line under navbar ──────────────────────────
+        tk.Frame(self.root, bg=self.t.ACCENT_TEAL, height=2).pack(fill="x")
 
-    def _clear_content(self):
-        for widget in self.content.winfo_children():
-            widget.destroy()
+        # ── Content area ───────────────────────────────────────────
+        self.content = tk.Frame(self.root, bg=self.t.BG_MAIN)
+        self.content.pack(fill="both", expand=True)
 
-    def _highlight_nav(self, index):
+        # ── Status bar ─────────────────────────────────────────────
+        sb = tk.Frame(self.root, bg=self.t.BG_PANEL,
+                      height=26, relief="flat")
+        sb.pack(fill="x", side="bottom")
+        sb.pack_propagate(False)
+        tk.Frame(sb, bg=self.t.BORDER, height=1).pack(fill="x", side="top")
+        self.status_lbl = tk.Label(sb,
+                                   text="● Ready  |  UniProt · NCBI · PDB · KEGG · AlphaFold",
+                                   font=("Segoe UI", 9),
+                                   fg=self.t.ACCENT_TEAL,
+                                   bg=self.t.BG_PANEL, anchor="w")
+        self.status_lbl.pack(side="left", padx=14, pady=4)
+
+    def _clear(self):
+        for w in self.content.winfo_children():
+            w.destroy()
+
+    def _highlight(self, idx):
         for i, btn in enumerate(self.nav_buttons):
-            if i == index:
-                btn.configure(fg=self.theme.ACCENT_GREEN, bg=self.theme.BG_MID)
+            if i == idx:
+                btn.configure(fg=self.t.ACCENT_TEAL,
+                              bg=self.t.NAV_ACTIVE_BG)
             else:
-                btn.configure(fg=self.theme.TEXT_MAIN, bg=self.theme.BG_PANEL)
+                btn.configure(fg=self.t.NAV_TEXT, bg=self.t.NAV_BG)
 
     def _show_dashboard(self):
-        self._clear_content()
-        self._highlight_nav(0)
-        DashboardPanel(self.content, self.theme, self.set_status)
+        self._clear(); self._highlight(0)
+        DashboardPanel(self.content, self.t, self.set_status)
 
     def _show_proteins(self):
-        self._clear_content()
-        self._highlight_nav(1)
-        ProteinPanel(self.content, self.theme, self.set_status)
+        self._clear(); self._highlight(1)
+        ProteinPanel(self.content, self.t, self.set_status)
 
     def _show_genes(self):
-        self._clear_content()
-        self._highlight_nav(2)
-        GenePanel(self.content, self.theme, self.set_status)
+        self._clear(); self._highlight(2)
+        GenePanel(self.content, self.t, self.set_status)
 
     def _show_pathways(self):
-        self._clear_content()
-        self._highlight_nav(3)
-        PathwayPanel(self.content, self.theme, self.set_status)
+        self._clear(); self._highlight(3)
+        PathwayPanel(self.content, self.t, self.set_status)
 
     def _show_structures(self):
-        self._clear_content()
-        self._highlight_nav(4)
-        StructurePanel(self.content, self.theme, self.set_status)
+        self._clear(); self._highlight(4)
+        StructurePanel(self.content, self.t, self.set_status)
 
     def set_status(self, msg, color=None):
-        color = color or self.theme.ACCENT_GREEN
-        self.status_label.configure(text=f"● {msg}", fg=color)
+        self.status_lbl.configure(
+            text=f"● {msg}", fg=color or self.t.ACCENT_TEAL)
 
-    def _update_clock(self):
-        now = datetime.now().strftime("%Y-%m-%d  %H:%M:%S")
-        self.clock_label.configure(text=now)
-        self.root.after(1000, self._update_clock)
-
-    def _on_close(self):
-        self.root.destroy()
+    def _tick(self):
+        self.clock.configure(
+            text=datetime.now().strftime("%Y-%m-%d  %H:%M:%S"))
+        self.root.after(1000, self._tick)

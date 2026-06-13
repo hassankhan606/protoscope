@@ -25,7 +25,7 @@
 
 ## 🖥️ Screenshots
 
-> Dark biotech-themed UI with phosphorescent green accents, monospace fonts, and a clean split-panel layout.
+> Bright biotech-themed UI with phosphorescent green accents, monospace fonts, and a clean split-panel layout.
 
 ---
 

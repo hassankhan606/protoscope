@@ -22,26 +22,26 @@ class PathwayPanel:
         header = tk.Frame(self.parent, bg=self.t.BG_PANEL, pady=16)
         header.pack(fill="x")
         tk.Label(header, text="🗺️  Biological Pathway Explorer",
-                 font=("Consolas", 18, "bold"),
-                 fg=self.t.ACCENT_GREEN,
+                 font=("Segoe UI", 18, "bold"),
+                 fg=self.t.ACCENT_TEAL,
                  bg=self.t.BG_PANEL).pack(side="left", padx=24)
         tk.Label(header, text="Powered by KEGG",
-                 font=("Consolas", 10),
+                 font=("Segoe UI", 10),
                  fg=self.t.TEXT_DIM,
                  bg=self.t.BG_PANEL).pack(side="left")
 
         # Controls
-        cf = tk.Frame(self.parent, bg=self.t.BG_DARK, pady=12)
+        cf = tk.Frame(self.parent, bg=self.t.BG_MAIN, pady=12)
         cf.pack(fill="x", padx=20)
-        row = tk.Frame(cf, bg=self.t.BG_DARK)
+        row = tk.Frame(cf, bg=self.t.BG_MAIN)
         row.pack(fill="x")
 
         self.q = tk.StringVar()
         e = tk.Entry(row, textvariable=self.q,
-                     font=("Consolas", 13),
+                     font=("Segoe UI", 13),
                      bg=self.t.BG_PANEL,
                      fg=self.t.TEXT_MAIN,
-                     insertbackground=self.t.ACCENT_GREEN,
+                     insertbackground=self.t.ACCENT_TEAL,
                      relief="flat", width=40)
         e.pack(side="left", ipady=8, ipadx=8)
         e.bind("<Return>", self._search)
@@ -52,58 +52,58 @@ class PathwayPanel:
                                 values=["hsa (Human)", "mmu (Mouse)", "eco (E. coli)",
                                         "sce (Yeast)", "dme (Drosophila)"],
                                 width=16, state="readonly",
-                                font=("Consolas", 10))
+                                font=("Segoe UI", 10))
         org_menu.pack(side="left", padx=8, ipady=6)
 
         tk.Button(row, text=" 🔍 Search ",
-                  font=("Consolas", 12, "bold"),
-                  bg=self.t.ACCENT_GREEN,
-                  fg=self.t.BG_DARK,
+                  font=("Segoe UI", 12, "bold"),
+                  bg=self.t.ACCENT_TEAL,
+                  fg=self.t.BG_MAIN,
                   relief="flat", cursor="hand2",
                   command=self._search).pack(side="left", ipady=6)
 
         # Browse categories button
         tk.Button(row, text=" 📋 Browse All ",
-                  font=("Consolas", 12),
-                  bg=self.t.BG_MID,
+                  font=("Segoe UI", 12),
+                  bg=self.t.BG_PANEL,
                   fg=self.t.TEXT_MAIN,
                   relief="flat", cursor="hand2",
                   command=self._browse_all).pack(side="left", padx=8, ipady=6)
 
         # Paned view
         paned = tk.PanedWindow(self.parent, orient="horizontal",
-                               bg=self.t.BG_DARK, sashwidth=4)
+                               bg=self.t.BG_MAIN, sashwidth=4)
         paned.pack(fill="both", expand=True, padx=10, pady=8)
 
         # List
-        left = tk.Frame(paned, bg=self.t.BG_DARK)
+        left = tk.Frame(paned, bg=self.t.BG_MAIN)
         paned.add(left, width=360)
         tk.Label(left, text="PATHWAYS",
-                 font=("Consolas", 9, "bold"),
+                 font=("Segoe UI", 9, "bold"),
                  fg=self.t.TEXT_DIM,
-                 bg=self.t.BG_DARK).pack(anchor="w", padx=6, pady=(4, 2))
+                 bg=self.t.BG_MAIN).pack(anchor="w", padx=6, pady=(4, 2))
 
-        lw = tk.Frame(left, bg=self.t.BG_DARK)
+        lw = tk.Frame(left, bg=self.t.BG_MAIN)
         lw.pack(fill="both", expand=True)
-        self.canvas = tk.Canvas(lw, bg=self.t.BG_DARK, highlightthickness=0)
+        self.canvas = tk.Canvas(lw, bg=self.t.BG_MAIN, highlightthickness=0)
         sb = ttk.Scrollbar(lw, orient="vertical", command=self.canvas.yview)
         self.canvas.configure(yscrollcommand=sb.set)
         sb.pack(side="right", fill="y")
         self.canvas.pack(side="left", fill="both", expand=True)
-        self.inner = tk.Frame(self.canvas, bg=self.t.BG_DARK)
+        self.inner = tk.Frame(self.canvas, bg=self.t.BG_MAIN)
         self.canvas.create_window((0, 0), window=self.inner, anchor="nw")
         self.inner.bind("<Configure>",
                         lambda e: self.canvas.configure(
                             scrollregion=self.canvas.bbox("all")))
 
         # Detail
-        self.detail = tk.Frame(paned, bg=self.t.BG_DARK)
+        self.detail = tk.Frame(paned, bg=self.t.BG_MAIN)
         paned.add(self.detail)
         tk.Label(self.detail,
                  text="Select a pathway to explore it.",
-                 font=("Consolas", 12),
+                 font=("Segoe UI", 12),
                  fg=self.t.TEXT_DIM,
-                 bg=self.t.BG_DARK).pack(expand=True)
+                 bg=self.t.BG_MAIN).pack(expand=True)
 
         # Load featured pathways on startup
         threading.Thread(target=self._load_featured, daemon=True).start()
@@ -117,15 +117,15 @@ class PathwayPanel:
 
     def _show_chips(self, items):
         tk.Label(self.inner, text="Featured Pathways:",
-                 font=("Consolas", 9, "bold"),
+                 font=("Segoe UI", 9, "bold"),
                  fg=self.t.TEXT_DIM,
-                 bg=self.t.BG_DARK).pack(anchor="w", padx=6, pady=6)
+                 bg=self.t.BG_MAIN).pack(anchor="w", padx=6, pady=6)
         for item in items:
             chip = tk.Label(self.inner,
                             text=f"  ► {item}  ",
-                            font=("Consolas", 10),
+                            font=("Segoe UI", 10),
                             fg=self.t.ACCENT_ORANGE,
-                            bg=self.t.BG_CARD,
+                            bg=self.t.BG_PANEL,
                             cursor="hand2",
                             pady=6)
             chip.pack(fill="x", padx=4, pady=2)
@@ -177,27 +177,27 @@ class PathwayPanel:
             w.destroy()
         if not results:
             tk.Label(self.inner, text="No pathways found.",
-                     font=("Consolas", 10),
+                     font=("Segoe UI", 10),
                      fg=self.t.TEXT_DIM,
-                     bg=self.t.BG_DARK).pack(pady=20)
+                     bg=self.t.BG_MAIN).pack(pady=20)
             return
         for pathway in results:
             self._pathway_card(pathway)
 
     def _pathway_card(self, pathway):
-        card = tk.Frame(self.inner, bg=self.t.BG_CARD, padx=10, pady=8,
+        card = tk.Frame(self.inner, bg=self.t.BG_PANEL, padx=10, pady=8,
                         cursor="hand2")
         card.pack(fill="x", pady=3, padx=4)
 
         tk.Label(card, text=pathway.get("name", "?"),
-                 font=("Consolas", 10, "bold"),
+                 font=("Segoe UI", 10, "bold"),
                  fg=self.t.ACCENT_ORANGE,
-                 bg=self.t.BG_CARD,
+                 bg=self.t.BG_PANEL,
                  anchor="w").pack(fill="x")
         tk.Label(card, text=f"ID: {pathway.get('id','—')}",
-                 font=("Consolas", 9),
+                 font=("Segoe UI", 9),
                  fg=self.t.TEXT_DIM,
-                 bg=self.t.BG_CARD,
+                 bg=self.t.BG_PANEL,
                  anchor="w").pack(fill="x")
 
         card.bind("<Button-1>", lambda e, p=pathway: self._show_detail(p))
@@ -211,27 +211,27 @@ class PathwayPanel:
         pid = pathway.get("id", "")
         pname = pathway.get("name", "")
 
-        canvas = tk.Canvas(self.detail, bg=self.t.BG_DARK, highlightthickness=0)
+        canvas = tk.Canvas(self.detail, bg=self.t.BG_MAIN, highlightthickness=0)
         sb = ttk.Scrollbar(self.detail, orient="vertical", command=canvas.yview)
         canvas.configure(yscrollcommand=sb.set)
         sb.pack(side="right", fill="y")
         canvas.pack(side="left", fill="both", expand=True)
-        inner = tk.Frame(canvas, bg=self.t.BG_DARK, padx=16, pady=12)
+        inner = tk.Frame(canvas, bg=self.t.BG_MAIN, padx=16, pady=12)
         canvas.create_window((0, 0), window=inner, anchor="nw")
         inner.bind("<Configure>",
                    lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
         tk.Label(inner, text=f"🗺️ {pname}",
-                 font=("Consolas", 18, "bold"),
+                 font=("Segoe UI", 18, "bold"),
                  fg=self.t.ACCENT_ORANGE,
-                 bg=self.t.BG_DARK,
+                 bg=self.t.BG_MAIN,
                  wraplength=500).pack(anchor="w")
         tk.Label(inner, text=f"KEGG ID: {pid}",
-                 font=("Consolas", 10),
+                 font=("Segoe UI", 10),
                  fg=self.t.TEXT_DIM,
-                 bg=self.t.BG_DARK).pack(anchor="w", pady=(0, 12))
+                 bg=self.t.BG_MAIN).pack(anchor="w", pady=(0, 12))
 
-        bf = tk.Frame(inner, bg=self.t.BG_DARK, pady=6)
+        bf = tk.Frame(inner, bg=self.t.BG_MAIN, pady=6)
         bf.pack(fill="x")
 
         kegg_url = f"https://www.kegg.jp/pathway/{pid}"
@@ -243,8 +243,8 @@ class PathwayPanel:
             ("📖 Wikipedia",     f"https://en.wikipedia.org/wiki/{wiki_q}", self.t.ACCENT_PURPLE),
         ]:
             tk.Button(bf, text=label,
-                      font=("Consolas", 10),
-                      bg=color, fg=self.t.BG_DARK,
+                      font=("Segoe UI", 10),
+                      bg=color, fg=self.t.BG_MAIN,
                       relief="flat", cursor="hand2",
                       command=lambda u=url: webbrowser.open(u)).pack(
                           side="left", padx=4, ipady=4, ipadx=6)
@@ -268,12 +268,12 @@ class PathwayPanel:
             row = tk.Frame(inner, bg=self.t.BG_PANEL, pady=6, padx=10)
             row.pack(fill="x", pady=2)
             tk.Label(row, text=f"{label}:",
-                     font=("Consolas", 9, "bold"),
+                     font=("Segoe UI", 9, "bold"),
                      fg=self.t.TEXT_DIM,
                      bg=self.t.BG_PANEL,
                      width=12, anchor="w").pack(side="left")
             tk.Label(row, text=str(val)[:200],
-                     font=("Consolas", 10),
+                     font=("Segoe UI", 10),
                      fg=self.t.TEXT_MAIN,
                      bg=self.t.BG_PANEL,
                      wraplength=420,
